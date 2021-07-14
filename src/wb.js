@@ -21,8 +21,6 @@ import TouchID from 'react-native-touch-id';
 
 import DeviceInfo from 'react-native-device-info';
 
-import { getUniqueId, getManufacturer } from 'react-native-device-info';
-
 
 var rnw
 var cbc = false;
@@ -63,33 +61,58 @@ const Wb = () => {
         passcodeFallback: false, // iOS - allows the device to fall back to using the passcode, if faceid/touch is not available. this does not mean that if touchid/faceid fails the first few times it will revert to passcode, rather that if the former are not enrolled, then it will use the passcode.
     };
 
-    function touch() {
+    function touch(id) {
         TouchID.authenticate('지문 인식', optionalConfigObject)
             .then(success => {
                 console.log(success)
-                Alert.alert('인증완료')
-                rnw.postMessage('okay')
+                rnw.postMessage(id + '/1')
             }).catch(error => {
                 // Failure code
-                Alert.alert('지문 인식 오류 발생!')
+                // Alert.alert('지문 인식 오류 발생!')
+                console.log(success)
+                rnw.postMessage(id + '/0')
             });
     }
 
     function onMessage(event) {
         console.log(event.nativeEvent.data);
-        // Alert.alert(event.nativeEvent.data);
-        // rnw.postMessage('app')
 
         if (event.nativeEvent.data == 'touchid') {
 
+        }
+
+        if (event.nativeEvent.data == 'deviceid') {
+            try {
+                let uniqueId = DeviceInfo.getUniqueId();
+                rnw.postMessage(uniqueId)
+                console.log('전송 : ' + uniqueId)
+            } catch (error) {
+                console.log(error)
+                Alert.alert('나중에 다시 시도해주세요.', '증상이 계속되면 고객센터로 연락주세요.', [
+                    { text: "확인", onPress: () => RNExitApp.exitApp() }
+                ])
+            }
+        }
+
+        if (event.nativeEvent.data == 'deviceid/check') {
+            try {
+                let uniqueId = DeviceInfo.getUniqueId();
+                touch(uniqueId)
+                // rnw.postMessage(uniqueId + '/1')
+                console.log('전송 : ' + uniqueId + '/1')
+            } catch (error) {
+                console.log(error)
+                Alert.alert('나중에 다시 시도해주세요.', '증상이 계속되면 고객센터로 연락주세요.', [
+                    { text: "확인", onPress: () => RNExitApp.exitApp() }
+                ])
+            }
         }
 
 
     }
 
     useEffect(() => {
-        rnw.postMessage('hi')
-        touch()
+        // touch()
         let uniqueId = DeviceInfo.getUniqueId();
         console.log(uniqueId)
     }, [])
