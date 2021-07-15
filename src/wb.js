@@ -66,11 +66,15 @@ const Wb = () => {
             .then(success => {
                 console.log(success)
                 rnw.postMessage(id + '/1')
+                console.log('전송 : ' + id + '/1')
+
             }).catch(error => {
                 // Failure code
                 // Alert.alert('지문 인식 오류 발생!')
                 console.log(success)
                 rnw.postMessage(id + '/0')
+                console.log('전송 : ' + id + '/0')
+
             });
     }
 
@@ -99,7 +103,7 @@ const Wb = () => {
                 let uniqueId = DeviceInfo.getUniqueId();
                 touch(uniqueId)
                 // rnw.postMessage(uniqueId + '/1')
-                console.log('전송 : ' + uniqueId + '/1')
+                // console.log('전송 : ' + uniqueId + '/1')
             } catch (error) {
                 console.log(error)
                 Alert.alert('나중에 다시 시도해주세요.', '증상이 계속되면 고객센터로 연락주세요.', [
@@ -118,6 +122,7 @@ const Wb = () => {
     }, [])
 
     return (
+        <SafeAreaView style={{flex:1}}>
         <WebView
             ref={wb => { rnw = wb }}
             onMessage={event => {
@@ -135,6 +140,7 @@ const Wb = () => {
                 </View>
             )}
         />
+        </SafeAreaView>
     )
 }
 
