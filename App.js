@@ -23,7 +23,6 @@ function App() {
     <NavigationContainer>
       <Stack.Navigator headerMode={'none'}>
         <Stack.Screen name="메인웹뷰" component={Wb} />
-
       </Stack.Navigator>
     </NavigationContainer>
   );
