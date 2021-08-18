@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1006052619356",
+    "project_id": "homegreencare-9f6a9",
+    "storage_bucket": "homegreencare-9f6a9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1006052619356:android:dbba58d21395a403666299",
+        "android_client_info": {
+          "package_name": "com.semicolons.homegreencare"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1006052619356-rms0a6dsukkki1k2ps21b6n485p4jb79.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDrPkmhzWrMM9eNkIJrmsWa6ZImVYqY-rc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1006052619356-rms0a6dsukkki1k2ps21b6n485p4jb79.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

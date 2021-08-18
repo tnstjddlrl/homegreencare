@@ -96,6 +96,54 @@ const Wb = () => {
             });
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    const [pushToken, setPushToken] = useState('')
+    const [isAuthorized, setIsAuthorized] = useState(false)
+
+    const handlePushToken = useCallback(async () => {
+        const enabled = await messaging().hasPermission()
+        if (enabled) {
+            const fcmToken = await messaging().getToken()
+            if (fcmToken) setPushToken(fcmToken)
+        } else {
+            const authorized = await messaging.requestPermission()
+            if (authorized) setIsAuthorized(true)
+        }
+    }, [])
+
+
+    const saveDeviceToken = useCallback(async () => {
+        if (isAuthorized) {
+            const currentFcmToken = await firebase.messaging().getToken()
+            if (currentFcmToken !== pushToken) {
+                return saveTokenToDatabase(currentFcmToken)
+            }
+            return messaging().onTokenRefresh((token) => saveTokenToDatabase(token))
+        }
+    }, [pushToken, isAuthorized])
+
+    useEffect(() => {
+        requestUserPermission()
+        try {
+            handlePushToken()
+            saveDeviceToken()
+
+            setTimeout(() => {
+                console.log(pushToken)
+            }, 1000);
+        } catch (error) {
+            console.log(error)
+            Alert.alert('토큰 받아오기 실패')
+        }
+
+    }, [])
+
+    useEffect(() => {
+        console.log(pushToken)
+    }, [pushToken])
+    ///////////////////////////////////////////////////////////////////////////////
+
+
     function onMessage(event) {
         console.log(event.nativeEvent.data);
 
@@ -138,6 +186,11 @@ const Wb = () => {
             }
         }
 
+        if (event.nativeEvent.data == 'token') {
+            rnw.postMessage(pushToken)
+            console.log('전송 : ' + pushToken)
+        }
+
 
     }
 
@@ -148,19 +201,19 @@ const Wb = () => {
     }, [])
 
     return (
-        <SafeAreaView style={{flex:1}}>
-        <WebView
-            ref={wb => { rnw = wb }}
-            onMessage={event => {
-                onMessage(event)
-            }}
-            onLoadEnd={() => {
-                // rnw.postMessage('hello')
-            }}
-            source={{ uri: 'http://homegreencare001.cafe24.com/' }}
-            style={{ width: '100%', height: '100%' }}
-            onNavigationStateChange={(navState) => { cbc = navState.canGoBack; }}
-        />
+        <SafeAreaView style={{ flex: 1 }}>
+            <WebView
+                ref={wb => { rnw = wb }}
+                onMessage={event => {
+                    onMessage(event)
+                }}
+                onLoadEnd={() => {
+                    // rnw.postMessage('hello')
+                }}
+                source={{ uri: 'http://homegreencare001.cafe24.com/' }}
+                style={{ width: '100%', height: '100%' }}
+                onNavigationStateChange={(navState) => { cbc = navState.canGoBack; }}
+            />
         </SafeAreaView>
     )
 }
