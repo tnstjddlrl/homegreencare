@@ -1,5 +1,5 @@
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import {
     Alert,
     SafeAreaView,
@@ -21,9 +21,22 @@ import TouchID from 'react-native-touch-id';
 
 import DeviceInfo from 'react-native-device-info';
 
+import messaging from '@react-native-firebase/messaging';
+
 
 var rnw
 var cbc = false;
+
+async function requestUserPermission() {
+    const authStatus = await messaging().requestPermission();
+    const enabled =
+        authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+        authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+    if (enabled) {
+        console.log('Authorization status:', authStatus);
+    }
+}
 
 const Wb = () => {
 
