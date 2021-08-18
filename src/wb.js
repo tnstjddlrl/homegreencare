@@ -62,27 +62,53 @@ const Wb = () => {
     };
 
     function touch(id) {
-        TouchID.authenticate('지문 인식', optionalConfigObject)
+        TouchID.authenticate('생체 인식', optionalConfigObject)
             .then(success => {
                 console.log(success)
                 rnw.postMessage(id + '/1')
                 console.log('전송 : ' + id + '/1')
-
+                Alert.alert('생체 인식 성공!')
             }).catch(error => {
                 // Failure code
                 // Alert.alert('지문 인식 오류 발생!')
                 console.log(success)
                 rnw.postMessage(id + '/0')
                 console.log('전송 : ' + id + '/0')
+                Alert.alert('생체 인식 실패!')
 
+            });
+    }
+
+    function touchlogin(id) {
+        TouchID.authenticate('생체 인식', optionalConfigObject)
+            .then(success => {
+                console.log(success)
+                rnw.postMessage(id + '/ok')
+                console.log('전송 : ' + id + '/ok')
+                Alert.alert('생체 인식 성공!')
+            }).catch(error => {
+                // Failure code
+                // Alert.alert('지문 인식 오류 발생!')
+                console.log(error)
+                rnw.postMessage(id + '/fail')
+                console.log('전송 : ' + id + '/fail')
+                Alert.alert('생체 인식 실패!')
             });
     }
 
     function onMessage(event) {
         console.log(event.nativeEvent.data);
 
-        if (event.nativeEvent.data == 'touchid') {
-
+        if (event.nativeEvent.data == 'touchLogin') {
+            try {
+                let uniqueId = DeviceInfo.getUniqueId();
+                touchlogin(uniqueId)
+            } catch (error) {
+                console.log(error)
+                Alert.alert('나중에 다시 시도해주세요.', '증상이 계속되면 고객센터로 연락주세요.', [
+                    { text: "확인", onPress: () => RNExitApp.exitApp() }
+                ])
+            }
         }
 
         if (event.nativeEvent.data == 'deviceid') {
@@ -134,11 +160,6 @@ const Wb = () => {
             source={{ uri: 'http://homegreencare001.cafe24.com/' }}
             style={{ width: '100%', height: '100%' }}
             onNavigationStateChange={(navState) => { cbc = navState.canGoBack; }}
-            renderLoading={() => (
-                <View style={{ flex: 1, alignItems: 'center' }}>
-                    <ActivityIndicator size="large" />
-                </View>
-            )}
         />
         </SafeAreaView>
     )
