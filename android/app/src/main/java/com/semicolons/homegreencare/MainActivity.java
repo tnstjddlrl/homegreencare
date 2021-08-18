@@ -1,4 +1,4 @@
-package com.touchid;
+package com.semicolons.homegreencare;
 
 import com.facebook.react.ReactActivity;
 
