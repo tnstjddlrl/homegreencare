@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@react-native-community/masked-view": "^0.1.11",
+    "@react-native-community/push-notification-ios": "^1.9.0",
     "@react-native-firebase/app": "^12.6.1",
     "@react-native-firebase/messaging": "^12.6.1",
     "@react-navigation/native": "^5.9.4",
@@ -20,6 +21,7 @@
     "react-native-device-info": "^8.1.3",
     "react-native-exit-app": "^1.1.0",
     "react-native-gesture-handler": "^1.10.3",
+    "react-native-push-notification": "^7.4.0",
     "react-native-reanimated": "^2.2.0",
     "react-native-safe-area-context": "^3.2.0",
     "react-native-screens": "^3.4.0",
