@@ -19,27 +19,21 @@ import RNExitApp from 'react-native-exit-app';
 
 import TouchID from 'react-native-touch-id';
 
-import DeviceInfo from 'react-native-device-info';
+import DeviceInfo, { getUniqueId } from 'react-native-device-info';
 
 import messaging from '@react-native-firebase/messaging';
+import firebase from '@react-native-firebase/app'
 import PushNotification, { Importance } from 'react-native-push-notification';
+import { openSettings } from 'react-native-permissions';
 
+<<<<<<< HEAD
 import RNRestart from 'react-native-restart';
+=======
+import { check, PERMISSIONS, RESULTS, checkNotifications, requestNotifications } from 'react-native-permissions';
+>>>>>>> 홈그린케어/master
 
 var rnw
 var cbc = false;
-
-async function requestUserPermission() {
-  const authStatus = await messaging().requestPermission();
-  const enabled =
-    authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-    authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-
-  if (enabled) {
-    console.log('Authorization status:', authStatus);
-  }
-}
-
 
 function pnf(messageId, channelId, title, body) {
   PushNotification.localNotification({
@@ -62,10 +56,26 @@ function pnf(messageId, channelId, title, body) {
     playSound: false, // (optional) default: true
     soundName: "default", // (optional) Sound to play when the noti
   });
+<<<<<<< HEAD
 
+=======
+>>>>>>> 홈그린케어/master
 }
 
 const App = () => {
+
+  async function requestUserPermission() {
+    const authStatus = await messaging().requestPermission();
+    const enabled =
+      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+    if (enabled) {
+      console.log('Authorization status:', authStatus);
+    } else {
+      console.log('Authorization status:??', authStatus);
+    }
+  }
 
   useEffect(() => {
     const unsubscribe = messaging().onMessage(async remoteMessage => {
@@ -131,13 +141,18 @@ const App = () => {
   function touchlogin(id) {
     TouchID.authenticate('생체 인식', optionalConfigObject)
       .then(success => {
-        console.log(success)
+        console.log('석세스 : ' + success)
         rnw.postMessage(id + '/ok')
         console.log('전송 : ' + id + '/ok')
         Alert.alert('생체 인식 성공!')
       }).catch(error => {
         // Failure code
+<<<<<<< HEAD
         console.log(error)
+=======
+        // Alert.alert('지문 인식 오류 발생!')
+        console.log('에러 : ' + error)
+>>>>>>> 홈그린케어/master
         rnw.postMessage(id + '/fail')
         console.log('전송 : ' + id + '/fail')
         Alert.alert('생체 인식 실패!')
@@ -153,55 +168,105 @@ const App = () => {
   const [isAuthorized, setIsAuthorized] = useState(false)
 
   const handlePushToken = useCallback(async () => {
+    console.log('핸들푸시 실행!')
     const enabled = await messaging().hasPermission()
     if (enabled) {
       const fcmToken = await messaging().getToken()
-      if (fcmToken) setPushToken(fcmToken)
+      if (fcmToken) {
+        setPushToken(fcmToken)
+        console.log('토큰이 있다! ' + fcmToken)
+      }
+      else
+        console.log('토큰이 없다!')
     } else {
-      const authorized = await messaging.requestPermission()
+      console.log('얘뭐지?' + enabled)
+      const authorized = await messaging().requestPermission();
       if (authorized) setIsAuthorized(true)
+      else {
+        console.log('결국 안됨')
+        console.log(authorized)
+      }
     }
   }, [])
 
 
   const saveDeviceToken = useCallback(async () => {
+    console.log('savedevicetoken')
     if (isAuthorized) {
       const currentFcmToken = await firebase.messaging().getToken()
       if (currentFcmToken !== pushToken) {
-        return saveTokenToDatabase(currentFcmToken)
+        return setPushToken(currentFcmToken)
       }
-      return messaging().onTokenRefresh((token) => saveTokenToDatabase(token))
+      return messaging().onTokenRefresh((token) => setPushToken(token))
+    } else {
+      console.log('savedevicetoken isAuthorized : ' + isAuthorized)
     }
   }, [pushToken, isAuthorized])
 
   useEffect(() => {
-    requestUserPermission()
-    try {
-      handlePushToken()
-      saveDeviceToken()
 
-      setTimeout(() => {
-        console.log(pushToken)
-      }, 1000);
+    checkNotifications().then(({ status, settings }) => {
+      console.log('스테이터스 : ' + status);
+
+      if (status === 'blocked') {
+
+        requestUserPermission()
+        messaging().requestPermission()
+
+        requestNotifications(['alert', 'sound']).then(({ status, settings }) => {
+          console.log('스테이터스 : ' + status);
+
+          if (status === 'blocked') {
+
+            requestUserPermission()
+            messaging().requestPermission()
+            Alert.alert('앱을 재설치하여 알림 권한을 허용해주세요!')
+
+          } else {
+
+          }
+        });
+      } else {
+
+      }
+      console.log('세팅 : ' + settings);
+      console.log(settings)
+    });
+
+    try {
+      messaging().requestPermission();
+      requestUserPermission().then(() => {
+        try {
+          handlePushToken()
+          saveDeviceToken()
+        } catch (error) {
+          console.log(error)
+          Alert.alert('토큰 받아오기 실패')
+        }
+      })
     } catch (error) {
       console.log(error)
       Alert.alert('토큰 받아오기 실패')
-    }
 
+    }
   }, [])
 
   useEffect(() => {
-    console.log(pushToken)
+
+    console.log('토큰받아오기 : ' + pushToken)
+    openSettings().catch(() => console.warn('cannot open settings'));
+
   }, [pushToken])
   ///////////////////////////////////////////////////////////////////////////////
 
 
   function onMessage(event) {
+
     console.log(event.nativeEvent.data);
 
     if (event.nativeEvent.data == 'touchLogin') {
       try {
-        let uniqueId = DeviceInfo.getUniqueId();
+        let uniqueId = getUniqueId();
         touchlogin(uniqueId)
       } catch (error) {
         console.log(error)
@@ -213,7 +278,7 @@ const App = () => {
 
     if (event.nativeEvent.data == 'deviceid') {
       try {
-        let uniqueId = DeviceInfo.getUniqueId();
+        let uniqueId = getUniqueId();
         rnw.postMessage(uniqueId)
         console.log('전송 : ' + uniqueId)
       } catch (error) {
@@ -226,7 +291,7 @@ const App = () => {
 
     if (event.nativeEvent.data == 'deviceid/check') {
       try {
-        let uniqueId = DeviceInfo.getUniqueId();
+        let uniqueId = getUniqueId();
         touch(uniqueId)
         // rnw.postMessage(uniqueId + '/1')
         // console.log('전송 : ' + uniqueId + '/1')
@@ -246,8 +311,8 @@ const App = () => {
 
   useEffect(() => {
     // touch()
-    let uniqueId = DeviceInfo.getUniqueId();
-    console.log(uniqueId)
+    let uniqueId = getUniqueId();
+    console.log('유니크 아이디 : ' + uniqueId)
   }, [])
 
   return (
@@ -260,7 +325,7 @@ const App = () => {
         onLoadEnd={() => {
           // rnw.postMessage('hello')
         }}
-        source={{ uri: 'http://homegreencare001.cafe24.com/' }}
+        source={{ uri: 'https://homegreencare001.cafe24.com/' }}
         style={{ width: '100%', height: '100%' }}
         onNavigationStateChange={(navState) => { cbc = navState.canGoBack; }}
       />
