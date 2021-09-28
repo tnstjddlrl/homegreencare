@@ -24,6 +24,7 @@ import DeviceInfo from 'react-native-device-info';
 import messaging from '@react-native-firebase/messaging';
 import PushNotification, { Importance } from 'react-native-push-notification';
 
+import RNRestart from 'react-native-restart';
 
 var rnw
 var cbc = false;
@@ -61,17 +62,6 @@ function pnf(messageId, channelId, title, body) {
     playSound: false, // (optional) default: true
     soundName: "default", // (optional) Sound to play when the noti
   });
-
-  // PushNotification.localNotificationSchedule({
-  //   channelId: 'fcm_alert',
-  //   title: title,
-  //   message: body, // (required)
-  //   id: messageId,
-  //   date: new Date(Date.now() + 1 * 1000),
-  //   playSound: true, // (optional) default: true
-  //   soundName: 'default',
-  //   repeatTime: 0,
-  // });
 
 }
 
@@ -135,7 +125,6 @@ const App = () => {
         rnw.postMessage(id + '/0')
         console.log('전송 : ' + id + '/0')
         Alert.alert('생체 인식 실패!')
-
       });
   }
 
@@ -148,11 +137,14 @@ const App = () => {
         Alert.alert('생체 인식 성공!')
       }).catch(error => {
         // Failure code
-        // Alert.alert('지문 인식 오류 발생!')
         console.log(error)
         rnw.postMessage(id + '/fail')
         console.log('전송 : ' + id + '/fail')
         Alert.alert('생체 인식 실패!')
+
+        setTimeout(() => {
+          RNRestart.Restart();
+        }, 1000);
       });
   }
 
@@ -250,8 +242,6 @@ const App = () => {
       rnw.postMessage(pushToken)
       console.log('전송 : ' + pushToken)
     }
-
-
   }
 
   useEffect(() => {
