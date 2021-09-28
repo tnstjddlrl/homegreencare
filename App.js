@@ -24,13 +24,10 @@ import DeviceInfo, { getUniqueId } from 'react-native-device-info';
 import messaging from '@react-native-firebase/messaging';
 import firebase from '@react-native-firebase/app'
 import PushNotification, { Importance } from 'react-native-push-notification';
-import { openSettings } from 'react-native-permissions';
 
-<<<<<<< HEAD
-import RNRestart from 'react-native-restart';
-=======
 import { check, PERMISSIONS, RESULTS, checkNotifications, requestNotifications } from 'react-native-permissions';
->>>>>>> 홈그린케어/master
+
+import RNRestart from 'react-native-restart';
 
 var rnw
 var cbc = false;
@@ -56,10 +53,6 @@ function pnf(messageId, channelId, title, body) {
     playSound: false, // (optional) default: true
     soundName: "default", // (optional) Sound to play when the noti
   });
-<<<<<<< HEAD
-
-=======
->>>>>>> 홈그린케어/master
 }
 
 const App = () => {
@@ -147,12 +140,6 @@ const App = () => {
         Alert.alert('생체 인식 성공!')
       }).catch(error => {
         // Failure code
-<<<<<<< HEAD
-        console.log(error)
-=======
-        // Alert.alert('지문 인식 오류 발생!')
-        console.log('에러 : ' + error)
->>>>>>> 홈그린케어/master
         rnw.postMessage(id + '/fail')
         console.log('전송 : ' + id + '/fail')
         Alert.alert('생체 인식 실패!')
@@ -254,7 +241,7 @@ const App = () => {
   useEffect(() => {
 
     console.log('토큰받아오기 : ' + pushToken)
-    openSettings().catch(() => console.warn('cannot open settings'));
+    // openSettings().catch(() => console.warn('cannot open settings'));
 
   }, [pushToken])
   ///////////////////////////////////////////////////////////////////////////////
