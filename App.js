@@ -124,7 +124,7 @@ const App = () => {
       }).catch(error => {
         // Failure code
         // Alert.alert('지문 인식 오류 발생!')
-        console.log(success)
+        console.log(error)
         rnw.postMessage(id + '/0')
         console.log('전송 : ' + id + '/0')
         Alert.alert('생체 인식 실패!')
@@ -132,22 +132,29 @@ const App = () => {
   }
 
   function touchlogin(id) {
-    TouchID.authenticate('생체 인식', optionalConfigObject)
-      .then(success => {
-        console.log('석세스 : ' + success)
-        rnw.postMessage(id + '/ok')
-        console.log('전송 : ' + id + '/ok')
-        Alert.alert('생체 인식 성공!')
-      }).catch(error => {
-        // Failure code
-        rnw.postMessage(id + '/fail')
-        console.log('전송 : ' + id + '/fail')
-        Alert.alert('생체 인식 실패!')
 
-        setTimeout(() => {
-          RNRestart.Restart();
-        }, 1000);
-      });
+    try {
+      TouchID.authenticate('생체 인식', optionalConfigObject)
+        .then(success => {
+          console.log('석세스 : ' + success)
+          rnw.postMessage(id + '/ok')
+          console.log('전송 : ' + id + '/ok')
+          Alert.alert('생체 인식 성공!')
+        }).catch(error => {
+          // Failure code
+          console.log(error)
+          rnw.postMessage(id + '/fail')
+          console.log('전송 : ' + id + '/fail')
+          Alert.alert('생체 인식 실패!')
+
+          setTimeout(() => {
+            RNRestart.Restart();
+          }, 1000);
+        });
+    } catch (error) {
+      console.log(error)
+    }
+
   }
 
   ///////////////////////////////////////////////////////////////////////////////
